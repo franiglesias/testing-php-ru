@@ -1,16 +1,16 @@
 # Desarrollar un algoritmo paso a paso con TDD: Luhn Test kata
 
-[Originalmente, hice esta kata con php en el blog](https://franiglesias.github.io/luhn-kata-php/), pero voy a trasponerla a PHP para este capítulo. Los principios en que se basa son exactamente los mismos, pero he tratado de eliminar todas las referencias a php y a como organizar el entorno de trabajo en ese lenguaje.
+[Originalmente, hice esta kata con python en el blog](https://franiglesias.github.io/luhn-kata-php/), pero voy a trasponerla a PHP para este capítulo. Los principios en que se basa son exactamente los mismos, pero he tratado de eliminar todas las referencias a python y a como organizar el entorno de trabajo en ese lenguaje.
 
 ## Sobre la Luhn Test kata
 
-La idea es desarrollar una función que testee números de tarjetas de crédito para ver si son válidos o simplemente cifras escogidas al azar.
+La idea es desarrollar una función que compruebe números de tarjetas de crédito para ver si son válidos o simplemente cifras escogidas al azar.
 
 [Puedes ver el ejercicio y sus detalles en este Gist de Manuel Rivero](https://gist.github.com/trikitrok/c2944e1bbbca51127854491ae3720559), quien presentó la kata en uno de los meetups de la Software Crafters de Barcelona, con una complejidad añadida: crear una única función o método para hacer la validación, testeando únicamente la interfaz pública y hacerlo en *baby-steps*.
 
 Esto significa no recurrir a objetos colaboradores, que podrían testearse aisladamente, o a trampear los tests probando métodos privados o similar. También significa no generar todo el algoritmo en una primera iteración, sino forzarse a ir paso a paso.
 
-Tiene su miga y eso es lo que voy a intentar hacer en este artículo.
+El reto tiene su miga y eso es lo que voy a intentar mostrar en este capítulo.
 
 ## Empecemos con un test
 
@@ -57,7 +57,7 @@ Al analizar este flujo podemos ver que las operaciones son sumas y productos y, 
 
 ## Empezando con el código de producción
 
-El test que he mostrado arriba no pasará obviamente. Primero nos reclama crear la clase LuhnValidator.
+El test que he mostrado arriba no pasará obviamente. Primero nos reclama crear la clase `LuhnValidator`.
 
 ### Código mínimo para pasar el test
 
@@ -98,7 +98,7 @@ class LuhnValidator
 
 ```
 
-Y ahora el test pasa.
+Y ahora el test pasa. Como habíamos visto en el capítulo anterior, nos basta con hacer pasar el test, de modo que posponemos la decisión sobre cómo debería pasar.
 
 ## Buscando un nuevo ejemplo
 
@@ -123,7 +123,7 @@ Mi siguiente ejemplo será: "00000000001".
 
 Pero, un momento, ¿sería un número válido o no? Hemos quedado en que no puede serlo.
 
-Lo cierto es que si aplicamos el algoritmo vemos que nuestro ejemplo no sería válido, por lo tanto, nuestro un test en el estado actual del código no pasaría, que es lo que queremos.
+Lo cierto es que si aplicamos el algoritmo vemos que nuestro ejemplo no sería un número de tarjeta válido, por lo tanto, nuestro un test en el estado actual del código no pasaría, que es lo que queremos.
 
 ¿Y por qué este ejemplo en concreto y no otro?
 
@@ -161,7 +161,7 @@ Lo primero es invertir la cadena, cosa que en PHP se puede hacer así:
 ```php
 $inverted = strrev($luhnCode);
 ```
-Pero esto no hace pasar el test, hay que implementar una mínima parte del algoritmo, que simplemente es ver el valor del primer dígito de la cadena invertida. Si no es `0` devolvemos False porque sería inválido:
+Pero esto no hace pasar el test, hay que implementar una mínima parte del algoritmo, que simplemente es ver el valor del primer dígito de la cadena invertida. Si no es `0` devolvemos `false` porque sería inválido:
 
 ```php
 <?php
@@ -184,7 +184,7 @@ class LuhnValidator
 
 ```
 
-Este ha sido un primer paso, y puede que no sea suficiente para demostrar todo lo que queremos. Pero lo interesante es que estamos avanzando en pequeños pasos, que es la intención del ejercicio.
+Hemos resuelto un primer problema, que es asegurarnos de que la cadena es invertida, y puede que no sea suficiente para demostrar todo lo que queremos. Pero lo interesante es que estamos avanzando en pequeños pasos, que es la intención del ejercicio.
 
 Tal cual está el código en este momento no tendríamos por qué hacer mucho más. A primera vista tendríamos la opción de realizar un pequeño refactor:
 
@@ -208,7 +208,7 @@ class LuhnValidator
 
 ## Los tests deben forzar implementaciones
 
-Una premisa de TDD es que cualquier código de producción sólo puede crearse como **respuesta a un test que falle**, que es como decir a una característica no implementada todavía. Si ahora escribimos un nuevo test que pase no podríamos modificar la implementación. No es que esté "prohibido", es simplemente que en este momento si escribimos un nuevo test que pasa, no nos dice nada acerca de qué deberíamos implementar. Únicamente nos confirma lo que ya sabemos. En todo caso, este tipo de tests, que recién escrito ya pasa, nos puede servir como test de **regresión**: si algún día falla nos está indicando que algo está alterando el algoritmo. 
+Una premisa de TDD es que cualquier código de producción sólo puede crearse como **respuesta a un test que falle**, que es como decir "a una característica no implementada todavía". Si ahora escribimos un nuevo test que pase no podríamos modificar la implementación. No es que esté "prohibido", es simplemente que en este momento si escribimos un nuevo test que pasa, no nos dice nada acerca de qué deberíamos implementar. Únicamente nos confirma lo que ya sabemos. En todo caso, este tipo de tests, que recién escrito ya pasa, nos puede servir como test de **regresión**: si algún día falla nos está indicando que algo ha alterado el algoritmo. 
 
 Lo que nos interesa ahora mismo es introducir alguna variación en los ejemplos que fuerce un cambio en la implementación a fin de darle cobertura. En concreto queremos sumar los dígitos en las posiciones impares.
 
@@ -334,7 +334,7 @@ class LuhnValidator
 
 ## Buscando un algoritmo más general
 
-Todavía no tenemos mucho para forzarnos a escribir un algoritmo más general. Para eso necesitamos otro test, el cual debe fallar si queremos que nos sirva. El código nos pedirá un algoritmo más general cuando podamos observar repeticiones o algún tipo de regularidad que podamos expresar de otra manera.
+Todavía no tenemos mucho como para forzarnos a escribir un algoritmo más general. Para eso necesitamos otro test, el cual debe fallar si queremos que nos sirva. El código nos estará indicado que necesitamos un algoritmo más general cuando podamos observar repeticiones o algún tipo de regularidad que podamos expresar de otra manera.
 
 Nosotros vamos a proponer el siguiente test, que nos fuerza a considerar un tercer dígito en la validación. Ahora que ya he establecido que el algoritmo se basa en la suma, puedo volver a mi estrategia minimalista anterior. He aquí el ejemplo (a partir de ahora sólo voy a poner el test específico). Aprovecho para cambiar un poco la forma de denominar los tests para que sean más claros sobre lo que ocurre
 
@@ -368,7 +368,7 @@ class LuhnValidator
 
 ```
 
-Con este cambio, el test pasa. Y lo bueno es que ya empezamos a vislumbrar una posibilidad de refactor: el cálculo de la suma de los dígitos impares (que en la representación index0 de los arrays de PHP van en los lugares pares, para liarla más) empieza a ser difícil de leer, además de repetitivo. Podríamos empezar extrayéndolo a un método, para explicitarlo:
+Con este cambio, el test pasa. Y lo bueno es que ya empezamos a vislumbrar una posibilidad de refactor: el cálculo de la suma de los dígitos impares (que en la representación *index0* de los arrays de PHP van en los lugares pares, para liarla más) empieza a ser difícil de leer, además de repetitivo. Podríamos empezar extrayéndolo a un método, para explicitarlo:
 
 ```php
 <?php
@@ -582,7 +582,7 @@ class LuhnValidator
 }
 ```
 
-Podemos seguir usando el mismo patrón que antes, moviendo el dígito a la siguiente posición par, un test cada vez. Para abreviar el ejemplo, voy a poner sólo los tests que he ido haciendo (te doy mi palabra de que he llegado hasta aquí haciendo baby steps):
+Podemos seguir usando el mismo patrón que antes, moviendo el dígito a la siguiente posición par, un test cada vez. Para abreviar el ejemplo, voy a poner sólo los tests que he ido haciendo (te doy mi palabra de que he llegado hasta aquí haciendo *baby steps*):
 
 ```php
     public function testShouldConsiderSecondPosition(): void
